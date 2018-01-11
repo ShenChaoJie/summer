@@ -1,4 +1,4 @@
-package org.summer.commons;
+package org.summerframework.core;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

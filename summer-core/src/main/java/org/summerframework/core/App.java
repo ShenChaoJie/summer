@@ -1,4 +1,4 @@
-package org.summer.core;
+package org.summerframework.core;
 
 /**
  * Hello world!
