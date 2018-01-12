@@ -12,6 +12,8 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.summerframework.commons.io.ClassPathResource;
 import org.summerframework.commons.io.Resource;
+import org.summerframework.commons.support.logging.Logger;
+import org.summerframework.commons.support.logging.LoggerFactory;
 import org.summerframework.commons.util.ResourceUtils;
 
 import com.google.common.base.Charsets;
@@ -33,6 +35,9 @@ public final class PropertiesLoader {
 	 * 属性配置列表根
 	 */
 	public static final String CONTEXT = "context";
+	
+	
+	private static Logger LOGGER = LoggerFactory.getLogger(PropertiesLoader.class);	
 	
 	
 	public PropertiesLoader() {
@@ -119,7 +124,7 @@ public final class PropertiesLoader {
 							if(properties != null){
 								PROPERTIES.put(ctx, properties);
 							}else{
-								//LOGGER.error(ctx + ": 无法加载此属性文件!");
+								LOGGER.error(ctx + ": 无法加载此属性文件!");
 							}
 						}
 					}

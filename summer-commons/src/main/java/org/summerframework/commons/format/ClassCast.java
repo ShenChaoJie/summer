@@ -8,6 +8,8 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.summerframework.commons.support.logging.Logger;
+import org.summerframework.commons.support.logging.LoggerFactory;
 import org.summerframework.commons.util.ObjectCompare;
 import org.summerframework.commons.util.ObjectUtils;
 
@@ -40,6 +42,8 @@ public final class ClassCast {
     private static final String DATE_UTIL = "java.util.Date";
     private static final String DATE_SQL = "java.sql.Date";
     private static final String TIMESTAMP = "java.sql.Timestamp";
+    
+    private static Logger LOGGER = LoggerFactory.getLogger(ClassCast.class);
     
 	private ClassCast() {
 		
@@ -262,7 +266,12 @@ public final class ClassCast {
 						if(cls == String.class){
 							return value;
 						}
-						return JSON.parseObject((String)value,cls);
+						
+						try {
+							return JSON.parseObject((String)value,cls);
+						} catch (final Throwable e) {
+							LOGGER.error("ClassCast value error: " + value, e);
+						}
 					}
 					
 					return value;
