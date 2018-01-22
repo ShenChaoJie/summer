@@ -77,14 +77,17 @@ public final class PropertiesLoader {
 	 * @return
 	 * @throws IOException 
 	 */
-	public static Properties load(final InputStream input) throws IOException{
+	public static Properties load(final InputStream input) {
 		if(input == null){
 			 throw new LoaderException("输入流为空");
 		}
-		
-		final Properties properties = new Properties();
-		properties.load(new InputStreamReader(input,Charsets.UTF_8));
-		return properties;
+		try {
+			final Properties properties = new Properties();
+			properties.load(new InputStreamReader(input,Charsets.UTF_8));
+			return properties;
+		} catch (final IOException e) {
+			throw new LoaderException("加载文件异常: "+e.getMessage());
+		}
 	}
 	
 	/**
