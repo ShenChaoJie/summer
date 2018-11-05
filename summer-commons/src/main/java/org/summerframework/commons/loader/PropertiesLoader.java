@@ -108,7 +108,7 @@ public final class PropertiesLoader {
 	
 	/**
 	 * 加载属性文件
-	 * @param ContextPath  文件相对路径
+	 * @param contextPath  文件相对路径
 	 * @param loadContext  是否加载context
 	 */
 	public static void load(final String contextPath,final boolean loadContext){

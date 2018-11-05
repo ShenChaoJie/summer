@@ -5,15 +5,13 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 
+import com.google.inject.name.Names;
 import org.summerframework.commons.support.logging.Logger;
 import org.summerframework.commons.support.logging.LoggerFactory;
 import org.summerframework.commons.util.CollectionUtils;
 import org.summerframework.core.globals.Globals;
 import org.summerframework.core.plugins.Module;
-import org.summerframework.core.spi.Lazy;
-import org.summerframework.core.spi.SPI;
-import org.summerframework.core.spi.SPILoader;
-import org.summerframework.core.spi.SPIMapper;
+import org.summerframework.core.spi.*;
 
 import com.google.inject.Binder;
 import com.google.inject.Injector;
@@ -38,13 +36,18 @@ public class SPIModule implements Module {
 						 final String spiClsName = spi.getSpiClsName();
 						 final String name = spi.getName();
 						 final String instanceClsName = spi.getInstanceClsName();
-						 //cjshen写到这里 , 没有反射方法
-						 
-						 
+						 if (!spi.getLazy()) {
+						 	final Object instance = injector.getInstance(spi.getInstance());
+						 	binder.bind(spi.getSpi()).annotatedWith(Names.named(name)).toInstance(instance);
+						 	LOGGER.debug("绑定即时SPI, 接口定义: {}, 绑定名称: {}, 实现类: {}", spiClsName, name, instanceClsName);
+						 } else {
+							binder.bind(spi.getSpi()).annotatedWith(Names.named(name)).toProvider(new SPIProvider(spi));
+							LOGGER.debug("绑定延时SPI, 接口定义: {}, 绑定名称: {}, 实现类: {}", spiClsName, name, instanceClsName);
+						 }
 					 });
-					
 				}else {
-					
+					//写到这里 cjshen ,处理是@Lazy 子类  的延时绑定SPI
+
 					
 				}
 				
