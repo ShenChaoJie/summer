@@ -47,8 +47,13 @@ public class SPIModule implements Module {
 					 });
 				}else {
 					//写到这里 cjshen ,处理是@Lazy 子类  的延时绑定SPI
-
-					
+					spis.forEach(spi -> {
+						final String spiClsName = spi.getSpiClsName();
+						final String name = spi.getName();
+						final String instanceClsName = spi.getInstanceClsName();
+						binder.bind(spi.getSpi()).annotatedWith(Names.named(name)).toProvider(new SPIProvider(spi));
+						LOGGER.debug("绑定延时SPI, 接口定义: {}, 绑定名称: {}, 实现类: {}", spiClsName, name, instanceClsName);
+					});
 				}
 				
 			});

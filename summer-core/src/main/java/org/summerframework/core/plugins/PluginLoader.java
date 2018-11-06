@@ -4,16 +4,28 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 import org.apache.commons.lang3.StringUtils;
 import org.summerframework.commons.loader.PropertiesLoader;
 import org.summerframework.commons.support.logging.Logger;
 import org.summerframework.commons.support.logging.LoggerFactory;
+import org.summerframework.commons.util.CollectionUtils;
 import org.summerframework.core.context.ApplicationContext;
 import org.summerframework.core.globals.Globals;
 import org.summerframework.core.plugins.delaults.moudle.SPIModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.summerframework.core.spi.Level;
+import org.summerframework.core.spi.SPILoader;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -38,13 +50,17 @@ public class PluginLoader {
 	public void init(final ServletConfig config,final ServletContext context) {
 		this.config = config;
 		this.context = context;
-		
-		 initProperties();   //初始化配置文件
-		 initRootInjector();   //初始化根注入
-		 /*  initModules();        //初始化模块
-         initPlugins();        //初始化插件
-         initComponent();*/    //初始化组件
-		
+		try {
+		 	initProperties();   //初始化配置文件
+		 	initRootInjector();   //初始化根注入
+		 	initModules();       //初始化模块
+			//写到这里 cjshen ,初始化module 完成
+         	/*  initPlugins();        //初始化插件
+         	initComponent();*/    //初始化组件
+		} catch (final Throwable e) {
+			throw new PluginLoaderException(e.getMessage(), e);
+		}
+
 	}
 	
 	private void initProperties() {
@@ -71,6 +87,35 @@ public class PluginLoader {
 		Globals.set(Injector.class, inject);
 		Globals.set(Injector.class, inject.createChildInjector(new SPIModule()));
 	}
+
+
+	private void initModules() throws Throwable{
+		final Set<String> moduleNames = SPILoader.spiNames(Module.class);
+		if(!CollectionUtils.isEmpty(moduleNames)){
+			final Injector injector = Globals.get(Injector.class);
+			final Map<Integer, List<Module>> modules = Maps.newHashMap();
+			for (final String moduleName : moduleNames){
+				final Module module = injector.getInstance(Key.get(Module.class, Names.named(moduleName)));
+				final Level level = module.getClass().getAnnotation(Level.class);
+				if(level != null){
+					addModules(modules, level.value(), module);
+				}else{
+					addModules(modules, 0 ,module);
+				}
+			}
+
+		}
+	}
+
+
+	private void addModules(final Map<Integer, List<Module>> modules, final Integer level, final Module module){
+		if(modules.containsKey(level)){
+			modules.get(level).add(module);
+		} else {
+			modules.put(level, Lists.newArrayList(module));
+		}
+	}
+
 	
 	
 	

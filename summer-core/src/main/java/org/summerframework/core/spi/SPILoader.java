@@ -172,9 +172,18 @@ public class SPILoader {
 	}
 
 	
-	public static Set<String> spiName(final Class<?> spiCls){
-		
-		return null;
+	public static Set<String> spiNames(final Class<?> spiCls){
+		if (!LOADED.get()) {
+			loading();
+		}
+		final List<SPIMapper> spiMappers = SPI_MAPPERS.get(spiCls);
+		if (!CollectionUtils.isEmpty(spiMappers)) {
+			final Set<String> spiNames = Sets.newLinkedHashSet();
+			spiMappers.forEach(spiMapper -> spiNames.add(spiMapper.getName()));
+			return Collections.unmodifiableSet(spiNames);
+		}
+
+		return Collections.emptySet();
 	}
 	
 	protected Enumeration<URL> getResources() throws IOException {
