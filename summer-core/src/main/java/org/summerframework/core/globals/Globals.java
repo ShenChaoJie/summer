@@ -21,7 +21,7 @@ public final class Globals {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static final <T> T get(final Class<?> clz) {
+	public static final <T> T get(final Class<T> clz) {
 		return (T) GLOBALS.get(clz);
 	}
 	

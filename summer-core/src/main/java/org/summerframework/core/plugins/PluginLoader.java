@@ -54,9 +54,9 @@ public class PluginLoader {
 		 	initProperties();   //初始化配置文件
 		 	initRootInjector();   //初始化根注入
 		 	initModules();       //初始化模块
-			//写到这里 cjshen ,初始化module 完成
-         	/*  initPlugins();        //初始化插件
-         	initComponent();*/    //初始化组件
+         	initPlugins();        //初始化插件
+
+         	/*  initComponent();*/    //初始化组件
 		} catch (final Throwable e) {
 			throw new PluginLoaderException(e.getMessage(), e);
 		}
@@ -103,7 +103,7 @@ public class PluginLoader {
 					addModules(modules, 0 ,module);
 				}
 			}
-
+            loadModules(modules);
 		}
 	}
 
@@ -116,8 +116,53 @@ public class PluginLoader {
 		}
 	}
 
-	
-	
+
+	private void loadModules(final  Map<Integer, List<Module>> loadingModules) throws Throwable{
+	    final List<Integer> levels = Lists.newArrayList();
+	    loadingModules.keySet().forEach(level -> levels.add(level));
+	    Collections.sort(levels);
+	    for(final Integer level : levels){
+	        final List<Module> modules = loadingModules.get(level);
+	        if(!CollectionUtils.isEmpty(modules)){
+	            final List<Module> mdus = Lists.newArrayList();
+	            for(final Module module : modules){
+                    module.config(config);
+                    mdus.addAll(module.load());
+                }
+
+                if(!CollectionUtils.isEmpty(mdus)){
+                    if(level.intValue() == 0){
+                        mdus.add(0, new SPIModule());
+                        Globals.set(Injector.class, Guice.createInjector(mdus));
+                    } else {
+                        Globals.set(Injector.class, Globals.get(Injector.class).createChildInjector(mdus));
+                    }
+                }
+
+
+            }
+
+        }
+
+    }
+
+
+    private  void initPlugins() throws Throwable{
+	    final Set<String> pluginNames = SPILoader.spiNames(Plugin.class);
+        if(!CollectionUtils.isEmpty(pluginNames)){
+            final Injector injector = Globals.get(Injector.class);
+            for (final String pluginName : pluginNames){
+                final Plugin plugin = injector.getInstance(Key.get(Plugin.class, Names.named(pluginName)));
+                plugin.config(config);
+                if (plugin.load()){
+                    LOGGER.info("Loading Plugin: {}", plugin.getClass().getName());
+                }
+            }
+
+        }
+
+
+    }
 	
 	
 	

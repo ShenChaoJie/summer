@@ -46,7 +46,6 @@ public class SPIModule implements Module {
 						 }
 					 });
 				}else {
-					//写到这里 cjshen ,处理是@Lazy 子类  的延时绑定SPI
 					spis.forEach(spi -> {
 						final String spiClsName = spi.getSpiClsName();
 						final String name = spi.getName();
