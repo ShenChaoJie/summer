@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 
+ * 组件初始化.
  * @author cjshen
  * @since 1.0
  */
@@ -56,7 +56,7 @@ public class PluginLoader {
 		 	initModules();       //初始化模块
          	initPlugins();        //初始化插件
 
-         	/*  initComponent();*/    //初始化组件
+         	initComponent();    //初始化组件
 		} catch (final Throwable e) {
 			throw new PluginLoaderException(e.getMessage(), e);
 		}
@@ -147,7 +147,7 @@ public class PluginLoader {
     }
 
 
-    private  void initPlugins() throws Throwable{
+    private void initPlugins() throws Throwable{
 	    final Set<String> pluginNames = SPILoader.spiNames(Plugin.class);
         if(!CollectionUtils.isEmpty(pluginNames)){
             final Injector injector = Globals.get(Injector.class);
@@ -163,9 +163,16 @@ public class PluginLoader {
 
 
     }
-	
-	
-	
+
+    private void initComponent() throws Throwable{
+		final long time = System.currentTimeMillis();
+		LOGGER.info("Starting inject component");
+		//Components.load();
+		//写到这里
+		LOGGER.info("Inject Compent complete, times: {}ms", System.currentTimeMillis() - time);
+
+
+	}
 	
 	
 	
