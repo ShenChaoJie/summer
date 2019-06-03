@@ -13,6 +13,7 @@ import org.summerframework.commons.loader.PropertiesLoader;
 import org.summerframework.commons.support.logging.Logger;
 import org.summerframework.commons.support.logging.LoggerFactory;
 import org.summerframework.commons.util.CollectionUtils;
+import org.summerframework.core.Component.Components;
 import org.summerframework.core.context.ApplicationContext;
 import org.summerframework.core.globals.Globals;
 import org.summerframework.core.plugins.delaults.moudle.SPIModule;
@@ -167,7 +168,7 @@ public class PluginLoader {
     private void initComponent() throws Throwable{
 		final long time = System.currentTimeMillis();
 		LOGGER.info("Starting inject component");
-		//Components.load();
+		Components.load();
 		//写到这里
 		LOGGER.info("Inject Compent complete, times: {}ms", System.currentTimeMillis() - time);
 
